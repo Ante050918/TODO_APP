@@ -54,7 +54,10 @@ final class UserFactory extends ModelFactory
             'email' => self::faker()->email(),
             'firstName' => self::faker()->firstName(),
             'lastName' => self::faker()->lastName(),
+            'registeredAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTimeBetween("-200 days", "-1 minute")),
+            'lastLoginAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTimeBetween("-200 days", "-1 minute")),
             'plainPassword' => 'tada',
+            'isVerified' => true,
         ];
     }
 

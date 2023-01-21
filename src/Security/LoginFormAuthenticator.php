@@ -4,7 +4,6 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +20,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Config\Doctrine\Orm\EntityManagerConfig;
+
 
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -28,10 +29,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     private UserRepository $userRepository;
     private RouterInterface $router;
 
+
     public function __construct(UserRepository $userRepository, RouterInterface $router){
 
         $this->userRepository = $userRepository;
         $this->router = $router;
+
     }
 
     public function authenticate(Request $request): Passport

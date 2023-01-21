@@ -2,13 +2,22 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class SecurityController extends AbstractController
+class SecurityController extends BaseController
 {
+
+    private ManagerRegistry $registry;
+
+    public function __construct(ManagerRegistry $registry){
+
+        $this->registry = $registry;
+    }
+
     #[Route('/login', name: 'app_security_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -19,9 +28,9 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/logout', name: 'app_security_logout')]
-    public function logout()
+    public function logout(Security $security)
     {
-        throw new \Exception("logout() should never be reached");
+
     }
 
 

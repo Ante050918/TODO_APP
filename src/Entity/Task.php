@@ -26,6 +26,7 @@ class Task
     #[ORM\JoinColumn(nullable: false)]
     private ?TodoList $todoList = null;
 
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,4 +79,5 @@ class Task
 
         return $this;
     }
+
 }

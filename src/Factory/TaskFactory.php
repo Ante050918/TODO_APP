@@ -50,7 +50,6 @@ final class TaskFactory extends ModelFactory
             'deadline' => \DateTimeImmutable::createFromMutable(self::faker()->dateTimeBetween("-200 days", "-1 minute")),
             'name' => self::faker()->text(255),
             'priority' => self::faker()->text(20),
-            'todoList' => TodoListFactory::new(),
         ];
     }
 

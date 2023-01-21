@@ -18,6 +18,10 @@ class TodoList
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\ManyToOne(inversedBy: 'todoList')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, orphanRemoval: true)]
     private Collection $task;
 
@@ -85,4 +89,6 @@ class TodoList
 
         return $this;
     }
+
+
 }

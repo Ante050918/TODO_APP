@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -46,6 +47,26 @@ class User implements UserInterface, \Symfony\Component\Security\Core\User\Passw
 
     private ?string $plainPassword;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $registeredAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastLoginAt = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = "Inactive";
+
+    #[ORM\Column]
+    private ?bool $isVerified = false;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: TodoList::class, orphanRemoval: true)]
+    private Collection $todoList;
+
+
+    public function __construct()
+    {
+        $this->todoList = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -148,5 +169,82 @@ class User implements UserInterface, \Symfony\Component\Security\Core\User\Passw
     public function setPlainPassword(?string $plainPassword): void
     {
         $this->plainPassword = $plainPassword;
+    }
+
+    public function getRegisteredAt(): ?\DateTimeImmutable
+    {
+        return $this->registeredAt;
+    }
+
+    public function setRegisteredAt(?\DateTimeImmutable $registeredAt): self
+    {
+        $this->registeredAt = $registeredAt;
+        return $this;
+    }
+
+    public function getLastLoginAt(): ?\DateTimeImmutable
+    {
+        return $this->lastLoginAt;
+    }
+
+    public function setLastLoginAt(?\DateTimeImmutable $lastLoginAt): self
+    {
+        $this->lastLoginAt = $lastLoginAt;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function isIsVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TodoList>
+     */
+    public function getTodoList(): Collection
+    {
+        return $this->todoList;
+    }
+
+    public function addTodoList(TodoList $todoList): self
+    {
+        if (!$this->todoList->contains($todoList)) {
+            $this->todoList->add($todoList);
+            $todoList->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTodoList(TodoList $todoList): self
+    {
+        if ($this->todoList->removeElement($todoList)) {
+            // set the owning side to null (unless already changed)
+            if ($todoList->getUser() === $this) {
+                $todoList->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
