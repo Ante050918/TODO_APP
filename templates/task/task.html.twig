@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="m-1 p-2" style="border: 1px solid black;">
+        <h4>List details</h4>
+        <b>{{ list.name }}</b> </br>
+        {{ list.createdAt|date('d-m-Y/H:i:s') }} </br>
+        Number of tasks: {{ tasks|length }}
+        <p style="color: red;">Uncompleted tasks {{ uncompleted|length }}</p>
+        {% if tasks|length > 0 %}
+            <b>Percentage: {{ percentage }}% </b>
+        {% endif %}
+    </div>
+    <form  action="{{ path('app_task_showtasks', {id: list.id}) }}" method="post" style="margin: 50px;">
+        <label for="orderBy"><b>ORDER BY:</b></label>
+        <select  name="orderBy">
+            <option value="name" name="name">Name</option>
+            <option value="status" name="status">Status</option>
+            <option value="priority" name="priority">Priority</option>
+            <option value="deadline" name="deadline">Deadline</option>
+        </select>
+        <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+    </form>
+    <table class="table table-striped">
+        <tr>
+            <th>NAME</th>
+            <th>STATUS</th>
+            <th>PRIORITY</th>
+            <th>DEADLINE</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <p><td>{{ task.name }} <a href="{{ path('app_edittask_edittask', {name : task.name}) }}">Edit</a> <a href="{{ path('app_task_deletetask', {name: task.name}) }}">Delete</a></p>
+                {% if task.status is same as('Uncompleted') %}
+                    <p>You finished this task? Confirm on link -> <a href="{{ path("app_task_changestatus", {id: task.id}) }}">Change status</a></p>
+                {% endif %}
+                {% set diff = time_diff(task.deadline, time) %}
+                {% if 'ago' in diff %}
+                    <p style="color: red;">Remaining time: {{ diff }}</p>
+                {% else %}
+                    <p style="color: green;">Remaining time: {{ diff }}</p>
+                {% endif %}
+                </td>
+                <div>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.priority }}</td>
+                    <td>{{ task.deadline|date('d-m-Y/H:i:s') }}</td>
+                </div>
+            </tr>
+
+        {% endfor %}
+    </table>
+    <a class="btn btn-dark m-1 p-lg-2" href="{{ path('app_task_addtask', {id: list.id}) }}"  style="margin-right: 5px">Add Task</a>
+{% endblock %}

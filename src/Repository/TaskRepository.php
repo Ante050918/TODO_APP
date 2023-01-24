@@ -39,20 +39,33 @@ class TaskRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Task[] Returns an array of Task objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Task[] Returns an array of Task objects
+     */
+    public function findAllTasks($value): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.todoList = :value')
+            ->setParameter('value', $value)
+            ->orderBy('t.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findUncompletedTasks($value1, $value2): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.status = :value1')
+            ->setParameter('value1', $value1)
+            ->andWhere('t.todoList = :value2')
+            ->setParameter('value2', $value2)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
 
 //    public function findOneBySomeField($value): ?Task
 //    {

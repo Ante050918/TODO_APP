@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use App\Controller\BaseController;
 use App\Repository\TodoListRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TodoListRepository::class)]
 class TodoList
@@ -15,7 +17,11 @@ class TodoList
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 30)]
+    #[Assert\Length(
+        min: 5,
+        max: 30,
+    )]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'todoList')]
@@ -24,6 +30,9 @@ class TodoList
 
     #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, orphanRemoval: true)]
     private Collection $task;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
 
 
     public function __construct()
@@ -86,6 +95,18 @@ class TodoList
                 $task->setTodoList(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

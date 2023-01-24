@@ -1,5 +1,30 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Hello World!</h1>
+    <form  action="{{ path('app_dashboard_homepage') }}" method="post" style="margin: 50px;">
+        <label for="orderBy"><b>ORDER BY:</b></label>
+        <select  name="orderBy">
+            <option value="name1" name="name1">Name(Ascending)</option>
+            <option value="name2" name="name2">Name(Descending)</option>
+            <option value="createdAt1" name="createdAt1">CreatedAt(Ascending)</option>
+            <option value="createdAt2" name="createdAt2">CreatedAt(Descending)</option>
+        </select>
+        <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+    </form>
+
+    <h4 class="mt-3">Lists:</h4>
+    <table class="table table-striped">
+        <tr>
+            <th>NAME</th>
+            <th>CREATED AT</th>
+            <th>NUMBER OF TASKS</th>
+        </tr>
+        {% for list in todoList %}
+            <tr>
+                <td>{{ list.name }} <a href="{{ path('app_task_showtasks', {id : list.id}) }}">View details</a> <a href="{{ path('app_dashboard_deletelist', {name: list.name}) }}">Delete</a></td>
+                <td>{{ list.createdAt|date('d-m-Y/H:i:s') }}</td>
+                <td>{{ list.task.count }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

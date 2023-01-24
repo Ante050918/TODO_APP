@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add new task{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="bg-light mt-4 p-4">
+                <h1>Add new task</h1>
+
+                {{ form_start(formTask) }}
+                {{ form_row(formTask.name) }}
+                {{ form_row(formTask.priority) }}
+                {{ form_row(formTask.deadline) }}
+
+                <button type="submit" class="btn btn-primary">Add</button>
+                {{ form_end(formTask) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

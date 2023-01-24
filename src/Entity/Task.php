@@ -26,6 +26,9 @@ class Task
     #[ORM\JoinColumn(nullable: false)]
     private ?TodoList $todoList = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = 'Uncompleted';
+
 
     public function getId(): ?int
     {
@@ -76,6 +79,18 @@ class Task
     public function setTodoList(?TodoList $todoList): self
     {
         $this->todoList = $todoList;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

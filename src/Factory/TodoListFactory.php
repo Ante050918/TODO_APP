@@ -47,7 +47,8 @@ final class TodoListFactory extends ModelFactory
     protected function getDefaults(): array
     {
         return [
-            'name' => self::faker()->text(255),
+            'name' => self::faker()->text(30),
+            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTimeBetween("-200 days", "-1 minute")),
         ];
     }
 

@@ -39,20 +39,22 @@ class TodoListRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return TodoList[] Returns an array of TodoList objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return TodoList[] Returns an array of TodoList objects
+     */
+    public function findAllLists($value): array
+    {
+        return $this->createQueryBuilder('tl')
+            ->where('tl.user = :value')
+            ->setParameter('value', $value)
+            ->leftJoin('tl.task', 'task')
+            ->addSelect('task')
+            ->orderBy('tl.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 
 //    public function findOneBySomeField($value): ?TodoList
 //    {
