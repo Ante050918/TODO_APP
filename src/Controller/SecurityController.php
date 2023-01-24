@@ -6,6 +6,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends BaseController
@@ -28,6 +29,7 @@ class SecurityController extends BaseController
     }
 
     #[Route('/logout', name: 'app_security_logout')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function logout(Security $security)
     {
 

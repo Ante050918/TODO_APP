@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\TodoList;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<TodoList>
@@ -21,8 +23,11 @@ class TodoListRepository extends ServiceEntityRepository
         parent::__construct($registry, TodoList::class);
     }
 
-    public function save(TodoList $entity, bool $flush = false): void
+    public function save(User $user, TodoList $entity, bool $flush = false): void
     {
+        $createdAt = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Berlin'));
+        $entity->setCreatedAt($createdAt);
+        $entity->setUser($user);
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
@@ -53,6 +58,19 @@ class TodoListRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function search($value1, $value2): array
+    {
+        $tl = $this->createQueryBuilder('tl');
+        $tl
+            ->andWhere('tl.user = :value1')
+            ->setParameter('value1', $value1)
+            ->andWhere('lower(tl.name) LIKE :searchTerm')
+                ->setParameter('searchTerm', '%'.strtolower($value2).'%');
+        return $tl->getQuery()->getResult();
+
+
     }
 
 

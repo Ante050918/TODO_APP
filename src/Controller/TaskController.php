@@ -25,11 +25,15 @@ class TaskController extends BaseController
     #[Route('/dashboard/showTasks/{id}', name: 'app_task_showtasks')]
     #[IsGranted("IS_AUTHENTICATED_FULLY")]
     public function showTasks(TaskRepository $repository, TodoList $todoList, TodoListRepository $listRepository){
+        $id = $todoList->getId();
+        $list = $listRepository->find($id);
         if(isset($_POST['submit'])){
             $orderBy = $_REQUEST['orderBy'];
+            $search = $_REQUEST['search'];
+            if($search){
+                $tasks = $repository->findUncompletedTasks($id, strtolower($search));
 
-            $id = $todoList->getId();
-            $list = $listRepository->find($id);
+            }
             $uncompletedTasks = $repository->findUncompletedTasks('Uncompleted', $id);
             $number = count($uncompletedTasks);
 
@@ -117,5 +121,46 @@ class TaskController extends BaseController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_dashboard_homepage');
+    }
+
+    #[Route('/dashboard/showTasks/addTask/{id}', name: 'app_task_addtask')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function addTask(Request $request, TodoList $list, TodoListRepository $repository, TaskRepository $taskRepository): Response {
+        $id = $list->getId();
+        $todoList = $repository->find($id);
+        $task = new Task();
+        $formTask = $this->createForm(TaskFormType::class, $task);
+        $formTask->handleRequest($request);
+
+        if ($formTask->isSubmitted() && $formTask->isValid()) {
+            $task = $formTask->getData();
+            $taskRepository->edit($todoList, $task, true);
+            return $this->redirectToRoute('app_dashboard_homepage');
+        }
+
+        return $this->render('task/addTask.html.twig',[
+                'formTask' => $formTask->createView(),
+            ]
+        );
+    }
+
+    #[Route('/dashboard/showTasks/editTask/{name}', name: 'app_edittask_edittask')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function editTask(Request $request, Task $task, TaskRepository $repository): Response {
+        $id = $task->getId();
+        $t = $repository->find($id);
+        $formTaskEdit = $this->createForm(TaskFormType::class, $t);
+        $formTaskEdit->handleRequest($request);
+
+        if ($formTaskEdit->isSubmitted() && $formTaskEdit->isValid()) {
+            $task = $formTaskEdit->getData();
+            $repository->save($task, true);
+            return $this->redirectToRoute('app_dashboard_homepage');
+        }
+
+        return $this->render('task/editTask.html.twig',[
+                'formTaskEdit' => $formTaskEdit->createView(),
+            ]
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 use App\Entity\TodoList;
+use App\Form\TodoListFormType;
 use App\Repository\TaskRepository;
 use App\Repository\TodoListRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -9,6 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelper;
+use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class DashboardController extends BaseController
 {
@@ -22,12 +26,19 @@ class DashboardController extends BaseController
 
     #[Route('/dashboard', name: 'app_dashboard_homepage')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function homePage(Request $request, TodoListRepository $repository, TaskRepository $task, TodoList $list){
+    public function homePage(VerifyEmailHelperInterface $verifyEmailHelper,Request $request, TodoListRepository $repository, TaskRepository $task, TodoList $list, AuthenticationUtils $authenticationUtils){
+        $user = $this->getUser();
+        $id = $user->getId();
+
         if(isset($_POST['submit'])){
             $orderBy = $_REQUEST['orderBy'];
-
-            $user = $this->getUser();
-            $id = $user->getId();
+            $search= $_REQUEST['search'];
+            if($search){
+                $todoLists = $repository->search($user, strtolower($search));
+                return $this->render('dashboard/dashboard.html.twig',[
+                    'todoList' => $todoLists,
+                ]);
+            }
             if($user->isIsVerified() === true){
                 $user->setStatus("Active");
                 $date = new \DateTimeImmutable("now");
@@ -67,7 +78,8 @@ class DashboardController extends BaseController
                 }
             }
             else{
-                return new Response("You must validate your email first!");
+                $this->addFlash('error', 'You have to validate your email first');
+                return $this->render('security/login.html.twig');
             }
         }
         $user = $this->getUser();
@@ -85,17 +97,20 @@ class DashboardController extends BaseController
             ]);
         }
         else{
-            return new Response("You must validate your email first!");
+            $signatureComponents = $verifyEmailHelper->generateSignature(
+                'app_registration_verifyuseremail',
+                $user->getId(),
+                $user->getEmail(),
+                ['id' => $user->getId()]
+            );
+            $this->addFlash('error', 'You have to validate your email first. Confirm it at: ' .$signatureComponents->getSignedUrl());
+            return $this->render('security/login.html.twig', [
+                'error' => $authenticationUtils->getLastAuthenticationError(),
+                'last_username' => $authenticationUtils->getLastUsername()
+            ]);
         }
 
     }
-
-    #[Route('dashboard/new', name: 'app_dashboard_new')]
-    public function new(){
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        return new Response("kahvbkja");
-    }
-
     #[Route('/dashboard/removeList/{name}', name: 'app_dashboard_deletelist')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function deleteList(TodoListRepository $repository, TodoList $todoList){
@@ -112,5 +127,25 @@ class DashboardController extends BaseController
             return $this->redirectToRoute('app_security_login');
         }
 
+    }
+
+    #[Route('/dashboard/addlist', name: 'app_addlist_add')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function add(Request $request, TodoListRepository $repository): Response {
+        $user = $this->getUser();
+        $todoList = new TodoList();
+        $form = $this->createForm(TodoListFormType::class, $todoList);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $todoList = $form->getData();
+            $repository->save($user, $todoList, true);
+            return $this->redirectToRoute('app_dashboard_homepage');
+        }
+
+        return $this->render('list/addList.html.twig',[
+                'form' => $form->createView(),
+            ]
+        );
     }
 }

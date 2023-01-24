@@ -28,7 +28,7 @@ class TodoList
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'todoList', targetEntity: Task::class, fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     private Collection $task;
 
     #[ORM\Column(nullable: true)]

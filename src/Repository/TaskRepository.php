@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Task;
+use App\Entity\TodoList;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,16 @@ class TaskRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Task::class);
+    }
+
+    public function edit(TodoList $list, Task $entity, bool $flush = false): void
+    {
+        $entity->setTodoList($list);
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 
     public function save(Task $entity, bool $flush = false): void
@@ -63,6 +74,19 @@ class TaskRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }
+
+    public function search($value1, $value2): array
+    {
+        $tl = $this->createQueryBuilder('tl');
+        $tl
+            ->andWhere('tl.todoList = :value1')
+            ->setParameter('value1', $value1)
+            ->andWhere('lower(tl.name) LIKE :searchTerm')
+            ->setParameter('searchTerm', '%'.strtolower($value2).'%');
+        return $tl->getQuery()->getResult();
+
+
     }
 
 

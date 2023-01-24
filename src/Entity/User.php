@@ -59,7 +59,7 @@ class User implements UserInterface, \Symfony\Component\Security\Core\User\Passw
     #[ORM\Column]
     private ?bool $isVerified = false;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: TodoList::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: TodoList::class ,orphanRemoval: true)]
     private Collection $todoList;
 
 
