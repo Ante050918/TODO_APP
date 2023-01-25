@@ -3,15 +3,22 @@
 {% block body %}
     <div>
         <div style="display: inline-block">
-            <form  action="{{ path('app_dashboard_homepage') }}" method="post" style="margin: 50px;">
-                <label for="orderBy"><b>ORDER BY:</b></label>
-                <select  name="orderBy">
-                    <option value="name1" name="name1">Name(Ascending)</option>
-                    <option value="name2" name="name2">Name(Descending)</option>
-                    <option value="createdAt1" name="createdAt1">CreatedAt(Ascending)</option>
-                    <option value="createdAt2" name="createdAt2">CreatedAt(Descending)</option>
-                </select>
-                <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+            <form  action="{{ path('app_dashboard_homepage') }}" method="get" style="margin: 50px;">
+                <div style="display: inline-block">
+                    <label for="orderBy"><b>ORDER BY:</b></label>
+                    <select  name="orderBy">
+                        <option value="name" name="name">Name</option>
+                        <option value="createdAt" name="createdAt">CreatedAt</option>
+                    </select>
+                </div>
+                <div style="display: inline-block; margin:10px;" >
+                    <input type="radio" id="asc" name="sort" value="ASC" checked>
+                    <label for="asc">ASC</label><br>
+                    <input type="radio" id="desc" name="sort" value="DESC">
+                    <label for="desc">DESC</label><br>
+                </div>
+                    <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+
 
                 <label for="search" style="margin-left: 30px;"><b>SEARCH:</b></label>
                 <input type="text" placeholder="Search.." name="search">
@@ -29,7 +36,7 @@
         </tr>
         {% for list in todoList %}
             <tr>
-                <td>{{ list.name }} <a href="{{ path('app_task_showtasks', {id : list.id}) }}">View details</a> <a href="{{ path('app_dashboard_deletelist', {name: list.name}) }}">Delete</a></td>
+                <td>{{ list.name }} <a href="{{ path('app_task_showtasks', {listId : list.id}) }}">View details</a> <a href="{{ path('app_dashboard_deletelist', {name: list.name}) }}">Delete</a></td>
                 <td>{{ list.createdAt|date('d-m-Y/H:i:s') }}</td>
                 <td>{{ list.task.count }}</td>
             </tr>

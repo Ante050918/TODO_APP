@@ -11,14 +11,22 @@
             <b>Percentage: {{ percentage }}% </b>
         {% endif %}
     </div>
-    <form  action="{{ path('app_task_showtasks', {id: list.id}) }}" method="post" style="margin: 50px;">
-        <label for="orderBy"><b>ORDER BY:</b></label>
-        <select  name="orderBy">
-            <option value="name" name="name">Name</option>
-            <option value="status" name="status">Status</option>
-            <option value="priority" name="priority">Priority</option>
-            <option value="deadline" name="deadline">Deadline</option>
-        </select>
+    <form  action="{{ path('app_task_showtasks', {listId: list.id}) }}" method="get" style="margin: 50px;">
+        <div style="display: inline-block;">
+            <label for="orderBy"><b>ORDER BY:</b></label>
+            <select  name="orderBy">
+                <option value="name" name="name">Name</option>
+                <option value="status" name="status">Status</option>
+                <option value="priority" name="priority">Priority</option>
+                <option value="deadline" name="deadline">Deadline</option>
+            </select>
+        </div>
+        <div style="display: inline-block; margin:10px;" >
+            <input type="radio" id="asc" name="sort" value="ASC" checked>
+            <label for="asc">ASC</label><br>
+            <input type="radio" id="desc" name="sort" value="DESC">
+            <label for="desc">DESC</label><br>
+        </div>
         <input type="submit" name="submit" value="Submit" class="btn btn-primary">
 
         <label for="search" style="margin-left: 30px;"><b>SEARCH:</b></label>
@@ -34,9 +42,9 @@
         </tr>
         {% for task in tasks %}
             <tr>
-                <p><td>{{ task.name }} <a href="{{ path('app_edittask_edittask', {name : task.name}) }}">Edit</a> <a href="{{ path('app_task_deletetask', {name: task.name}) }}">Delete</a></p>
+                <p><td>{{ task.name }} <a href="{{ path('app_edittask_edittask', {taskId: task.id, listId: list.id}) }}">Edit</a> <a href="{{ path('app_task_deletetask', {taskId: task.id, listId: list.id}) }}">Delete</a></p>
                 {% if task.status is same as('Uncompleted') %}
-                    <p>You finished this task? Confirm on link -> <a href="{{ path("app_task_changestatus", {id: task.id}) }}">Change status</a></p>
+                    <p>You finished this task? Confirm on link -> <a href="{{ path("app_task_changestatus", {taskId: task.id, listId: list.id}) }}">Change status</a></p>
                 {% endif %}
                 {% set diff = time_diff(task.deadline, time) %}
                 {% if 'ago' in diff %}
@@ -54,5 +62,5 @@
 
         {% endfor %}
     </table>
-    <a class="btn btn-dark m-1 p-lg-2" href="{{ path('app_task_addtask', {id: list.id}) }}"  style="margin-right: 5px">Add Task</a>
+    <a class="btn btn-dark m-1 p-lg-2" href="{{ path('app_task_addtask', {listId: list.id}) }}"  style="margin-right: 5px">Add Task</a>
 {% endblock %}

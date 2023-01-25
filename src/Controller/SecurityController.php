@@ -28,11 +28,11 @@ class SecurityController extends BaseController
         ]);
     }
 
-    #[Route('/logout', name: 'app_security_logout')]
+    #[Route('/dashboard/logout', name: 'app_security_logout')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function logout(Security $security)
     {
-
+        throw new \Exception('logout() should never be reached');
     }
 
 

@@ -47,17 +47,27 @@ class TodoListRepository extends ServiceEntityRepository
     /**
      * @return TodoList[] Returns an array of TodoList objects
      */
-    public function findAllLists($value): array
+    public function findAllLists($value1, $orderBy, $sort, $search): array
     {
-        return $this->createQueryBuilder('tl')
-            ->where('tl.user = :value')
-            ->setParameter('value', $value)
+        $tl = $this->createQueryBuilder('tl');
+
+        $tl
+            ->andWhere('tl.user = :value1')
+            ->setParameter('value1', $value1)
             ->leftJoin('tl.task', 'task')
-            ->addSelect('task')
-            ->orderBy('tl.name', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
+            ->addSelect('task');
+        if($search){
+            $tl
+                ->andWhere('lower(tl.name) LIKE :searchTerm')
+                ->setParameter('searchTerm', '%'.strtolower($search).'%');
+            return $tl->getQuery()->getResult();
+        }
+        if($orderBy && $sort){
+            $tl
+                ->orderBy('tl' . '.' . $orderBy, $sort);
+                return $tl->getQuery()->getResult();
+        }
+        return $tl->getQuery()->getResult();
     }
 
     public function search($value1, $value2): array
@@ -72,15 +82,4 @@ class TodoListRepository extends ServiceEntityRepository
 
 
     }
-
-
-//    public function findOneBySomeField($value): ?TodoList
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

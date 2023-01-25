@@ -45,6 +45,7 @@ class RegistrationController extends BaseController
             // TODO: in a real app, send this as an email!
             $this->addFlash('success', 'Confirm your email at: '.$signatureComponents->getSignedUrl());
             // do anything else you need here, like send an email
+
             return $this->redirectToRoute('app_dashboard_homepage');
         }
 
@@ -67,6 +68,7 @@ class RegistrationController extends BaseController
             );
         }catch(VerifyEmailExceptionInterface $e){
             $this->addFlash('error', $e->getReason());
+
             return $this->redirectToRoute('app_registration_register');
         };
         $user->setIsVerified(true);
@@ -74,6 +76,35 @@ class RegistrationController extends BaseController
         $entityManager->flush();
 
         $this->addFlash('success', 'Account Verified! You can now log in.');
+
         return $this->redirectToRoute('app_security_login');
+    }
+
+
+    #[Route("/verify/resend/{id}", name: "app_verify_resend_email")]
+
+    public function resendVerifyEmail($id, UserRepository $userRepository)
+    {
+        $user = $userRepository->find($id);
+        return $this->render('registration/resend_verify_email.html.twig',[
+            'user' => $user,
+        ]);
+    }
+
+    #[Route("/verify/newVerificationMail/{userId}", name: "app_registration_newverificationemail")]
+    public function newVerificationEmail($userId,UserRepository $userRepository, Request $request, VerifyEmailHelperInterface $verifyEmailHelper): Response{
+        $user = $userRepository->find($userId);
+        $signatureComponents = $verifyEmailHelper->generateSignature(
+            'app_registration_verifyuseremail',
+            $user->getId(),
+            $user->getEmail(),
+            ['id' => $user->getId()]
+        );
+
+        // TODO: in a real app, send this as an email!
+        $this->addFlash('success', 'Confirm your email at: '.$signatureComponents->getSignedUrl());
+        // do anything else you need here, like send an email
+
+        return $this->redirectToRoute('app_dashboard_homepage');
     }
 }
