@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,17 @@ class SecurityController extends BaseController
             'error' => $authenticationUtils->getLastAuthenticationError(),
             'last_username' => $authenticationUtils->getLastUsername()
         ]);
+    }
+
+    #[Route('/login/setLastLogin', name:"app_security_afterlogin")]
+    public function afterLogin(UserRepository $userRepository): Response{
+        $user = $this->getUser();
+        if($userRepository->find($user)){
+            $user->setLastLoginAt(new \DateTimeImmutable('now', new \DateTimeZone('Europe/Berlin')));
+            $userRepository->save($user, true);
+            return $this->redirectToRoute('app_dashboard_homepage');
+        }
+
     }
 
     #[Route('/dashboard/logout', name: 'app_security_logout')]

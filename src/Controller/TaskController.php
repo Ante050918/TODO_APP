@@ -44,7 +44,7 @@ class TaskController extends BaseController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function changeStatus($taskId, $listId, TaskRepository $repository, TodoListRepository $listRepository): Response{
         $user = $this->getUser();
-        $list = $listRepository->find($listId);
+        $list = $listRepository->findOneBy(['id' => $listId]);
         $task = $repository->find($taskId);
         $this->checkUser($user, $list);
         $task->setStatus('Completed');
@@ -56,7 +56,9 @@ class TaskController extends BaseController
     #[Route('/dashboard/showTasks/addTask/{listId}', name: 'app_task_addtask')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function addTask($listId, Request $request,TaskRepository $taskRepository, TodoListRepository $listRepository): Response {
-        $list = $listRepository->find($listId);
+        $user = $this->getUser();
+        $list = $listRepository->findOneBy(['id' => $listId]);
+        $this->checkUser($user, $list);
         $task = new Task();
         $task->setTodoList($list);
         $formTask = $this->createForm(TaskFormType::class, $task);
@@ -76,8 +78,10 @@ class TaskController extends BaseController
     #[Route('/dashboard/showTasks/editTask/{taskId}/{listId}', name: 'app_edittask_edittask')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function editTask($taskId, $listId, Request $request, TaskRepository $repository, TodoListRepository $listRepository): Response {
+        $user = $this->getUser();
         $task = $repository->find($taskId);
-        $list = $listRepository->find($listId);
+        $list = $listRepository->findOneBy(['id' => $listId]);
+        $this->checkUser($user, $list);
         $formTaskEdit = $this->createForm(TaskFormType::class, $task);
         $formTaskEdit->handleRequest($request);
         if ($formTaskEdit->isSubmitted() && $formTaskEdit->isValid()) {
@@ -91,13 +95,6 @@ class TaskController extends BaseController
             ]
         );
     }
-
-    public function checkUser($user, $list){
-        if(!($list->getUser() === $user)){
-            throw $this->createNotFoundException('This user doesn\'t have this task');
-        }
-    }
-
     public function checkCountOfTasksAndRenderTemplate($list, $allTasks, $numberOfUncompletedTasks, $uncompletedTasks): Response{
         if(count($allTasks) > 0){
             $completedTasks = count($allTasks) - $numberOfUncompletedTasks;

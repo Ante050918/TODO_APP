@@ -1,38 +1,44 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="m-1 p-2" style="border: 1px solid black;">
-        <h4>List details</h4>
-        <b>{{ list.name }}</b> </br>
-        {{ list.createdAt|date('d-m-Y/H:i:s') }} </br>
-        Number of tasks: {{ tasks|length }}
-        <p style="color: red;">Uncompleted tasks {{ uncompleted|length }}</p>
-        {% if tasks|length > 0 %}
-            <b>Percentage: {{ percentage }}% </b>
-        {% endif %}
+    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 20px;">
+        <div style="border: 1px solid black; box-shadow: 5px 10px 8px #888888;  border-radius: 10px; margin: 20px 0px 20px 80px; padding: 20px; width: 300px;">
+            <h4 style="font-family: sans-serif;">List details</h4>
+            <b>Name: {{ list.name }}</b> </br>
+            Created at: {{ list.createdAt|date('d-m-Y/H:i:s') }} </br>
+            Number of tasks: {{ tasks|length }}
+            <p style="color: red;">Uncompleted tasks: {{ uncompleted|length }}</p>
+            {% if tasks|length > 0 %}
+                <b>Percentage: {{ percentage }}% </b>
+            {% endif %}
+        </div>
     </div>
-    <form  action="{{ path('app_task_showtasks', {listId: list.id}) }}" method="get" style="margin: 50px;">
-        <div style="display: inline-block;">
-            <label for="orderBy"><b>ORDER BY:</b></label>
-            <select  name="orderBy">
-                <option value="name" name="name">Name</option>
-                <option value="status" name="status">Status</option>
-                <option value="priority" name="priority">Priority</option>
-                <option value="deadline" name="deadline">Deadline</option>
-            </select>
-        </div>
-        <div style="display: inline-block; margin:10px;" >
-            <input type="radio" id="asc" name="sort" value="ASC" checked>
-            <label for="asc">ASC</label><br>
-            <input type="radio" id="desc" name="sort" value="DESC">
-            <label for="desc">DESC</label><br>
-        </div>
-        <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+    <div style="border: 1px solid lightskyblue; margin: 20px 0px 20px 80px; width: 800px; border-radius: 10px; box-shadow: 5px 10px 8px lightskyblue;">
+        <form  action="{{ path('app_task_showtasks', {listId: list.id}) }}" method="get" style="margin: 50px;">
+            <div style="display: inline-block;">
+                <label for="orderBy"><b>ORDER BY:</b></label>
+                <select  name="orderBy">
+                    <option value="name" name="name">Name</option>
+                    <option value="status" name="status">Status</option>
+                    <option value="priority" name="priority">Priority</option>
+                    <option value="deadline" name="deadline">Deadline</option>
+                </select>
+            </div>
+            <div style="display: inline-block; margin: 10px;" >
+                <input type="radio" id="asc" name="sort" value="ASC" checked>
+                <label for="asc">ASC</label><br>
+                <input type="radio" id="desc" name="sort" value="DESC">
+                <label for="desc">DESC</label><br>
+            </div>
+            <input type="submit" name="submit" value="Submit" class="btn btn-primary">
 
-        <label for="search" style="margin-left: 30px;"><b>SEARCH:</b></label>
-        <input type="text" placeholder="Search.." name="search">
-        <button type="submit" name="submit"><i class="fa fa-search"></i></button>
-    </form>
+            <label for="search" style="margin-left: 30px;"><b>SEARCH:</b></label>
+            <input type="text" placeholder="Search.." name="search">
+            <button type="submit" name="submit"><i class="fa fa-search"></i></button>
+        </form>
+    </div>
+
+
     <table class="table table-striped">
         <tr>
             <th>NAME</th>

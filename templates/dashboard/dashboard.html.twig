@@ -2,7 +2,7 @@
 
 {% block body %}
     <div>
-        <div style="display: inline-block">
+        <div style="border: 1px solid lightskyblue; margin: 20px 0px 20px 80px; width: 800px; border-radius: 10px; box-shadow: 5px 10px 8px lightskyblue;">
             <form  action="{{ path('app_dashboard_homepage') }}" method="get" style="margin: 50px;">
                 <div style="display: inline-block">
                     <label for="orderBy"><b>ORDER BY:</b></label>
@@ -36,7 +36,7 @@
         </tr>
         {% for list in todoList %}
             <tr>
-                <td>{{ list.name }} <a href="{{ path('app_task_showtasks', {listId : list.id}) }}">View details</a> <a href="{{ path('app_dashboard_deletelist', {name: list.name}) }}">Delete</a></td>
+                <td>{{ list.name }} <a href="{{ path('app_task_showtasks', {listId : list.id}) }}">View details</a> <a href="{{ path('app_dashboard_deletelist', {listId: list.id}) }}">Delete</a></td>
                 <td>{{ list.createdAt|date('d-m-Y/H:i:s') }}</td>
                 <td>{{ list.task.count }}</td>
             </tr>

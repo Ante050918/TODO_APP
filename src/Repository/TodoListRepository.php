@@ -69,17 +69,4 @@ class TodoListRepository extends ServiceEntityRepository
         }
         return $tl->getQuery()->getResult();
     }
-
-    public function search($value1, $value2): array
-    {
-        $tl = $this->createQueryBuilder('tl');
-        $tl
-            ->andWhere('tl.user = :value1')
-            ->setParameter('value1', $value1)
-            ->andWhere('lower(tl.name) LIKE :searchTerm')
-                ->setParameter('searchTerm', '%'.strtolower($value2).'%');
-        return $tl->getQuery()->getResult();
-
-
-    }
 }
